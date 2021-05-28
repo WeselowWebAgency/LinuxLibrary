@@ -33,7 +33,7 @@ then
     echo '== Install 3proxy'
 
     # install reqs
-    apt update && apt install -y curl net-tools gcc make libc6-dev
+    apt-get update && apt-get install -y curl net-tools gcc make libc6-dev dialog apt-utils
     exit_if_not_equal_0 "$?" 'apt install failed'
 
     curl -sSL "https://github.com/z3APA3A/3proxy/archive/${PROXY_VER}.tar.gz" > "${CURRDIR}/${PROXY_VER}.tar.gz"

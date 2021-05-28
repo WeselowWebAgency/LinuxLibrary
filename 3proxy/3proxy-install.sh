@@ -29,6 +29,7 @@ done
 echo '== Set 3proxy config ...'
 cfg_file=/etc/3proxy/conf/3proxy.cfg
 cat >> ${cfg_file} << EOF
+#====#
 daemon
 pidfile /tmp/3proxy.pid
 #config /etc/3proxy/3proxy.cfg

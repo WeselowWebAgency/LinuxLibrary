@@ -2,8 +2,8 @@
 
 #install 3proxy
 export DEBIAN_FRONTEND=noninteractive
-wget https://github.com/3proxy/3proxy/releases/download/0.9.3/3proxy-0.9.3.x86_64.deb
-dpkg -i 3proxy-0.9.3.x86_64.deb
+wget -O /opt/3proxy-0.9.3.x86_64.deb https://github.com/3proxy/3proxy/releases/download/0.9.3/3proxy-0.9.3.x86_64.deb
+dpkg -i /opt/3proxy-0.9.3.x86_64.deb
 apt-get -f install && apt-get install -y -q curl net-tools gcc make libc6-dev dialog apt-utils
 
 

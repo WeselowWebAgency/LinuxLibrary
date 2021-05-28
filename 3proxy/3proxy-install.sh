@@ -32,13 +32,18 @@ if [ ! -f /usr/bin/3proxy ]
 then
     echo '== Install 3proxy'
 
-    # install reqs
+    # for non-interactive scripts
+	# variant 1:
 	#echo 'debconf debconf/frontend select Noninteractive' | sudo debconf-set-selections
 	#sudo apt-get install -y -q
 	#sudo chmod 777 /var/cache/debconf/
 	#sudo chmod 777 /var/cache/debconf/passwords.dat
+	
+	# variant 2:
 	export DEBIAN_FRONTEND=noninteractive
-    apt-get update && apt-get install -y curl net-tools gcc make libc6-dev dialog apt-utils
+    
+	# install reqs
+	apt-get update && apt-get install -y curl net-tools gcc make libc6-dev dialog apt-utils
     exit_if_not_equal_0 "$?" 'apt install failed'
 
     curl -sSL "https://github.com/z3APA3A/3proxy/archive/${PROXY_VER}.tar.gz" > "${CURRDIR}/${PROXY_VER}.tar.gz"
@@ -50,7 +55,7 @@ then
     cd "${CURRDIR}/3proxy-${PROXY_VER}/scripts" || exit_if_empty '' 'cd failed'
 
     chmod +x *.sh
-    3proxy-linux-install.sh
+    ./3proxy-linux-install.sh
 
     cd "${CURRDIR}" || exit_if_empty '' 'cd to CURRDIR failed'
 fi

@@ -1,29 +1,70 @@
 #!/bin/bash
 
 #install 3proxy
-wget https://github.com/3proxy/3proxy/releases/download/0.9.3/3proxy-0.9.3.x86_64.deb
-sudo dpkg -i 3proxy-0.9.3.x86_64.deb
-sudo apt-get -f install
+#wget https://github.com/3proxy/3proxy/releases/download/0.9.3/3proxy-0.9.3.x86_64.deb
+#dpkg -i 3proxy-0.9.3.x86_64.deb
+#apt-get -f install
+
+# current directory
+CURRDIR=$(pwd)
+# 3proxy version
+PROXY_VER='0.9.3'
+
+
+# funcs
+exit_if_not_equal_0() {
+    if [ "$1" -ne '0' ]
+    then
+        >&2 echo -e "== $2"
+        exit 1
+    fi
+}
+exit_if_empty() {
+    if [ -z "$1" ]
+    then
+        >&2 echo -e "== $2"
+        exit 1
+    fi
+}
+
+# install 3proxy
+if [ ! -f /usr/bin/3proxy ]
+then
+    echo '== Install 3proxy'
+
+    # install reqs
+    apt update && apt install -y curl net-tools gcc make libc6-dev
+    exit_if_not_equal_0 "$?" 'apt install failed'
+
+    curl -sSL "https://github.com/z3APA3A/3proxy/archive/${PROXY_VER}.tar.gz" > "${CURRDIR}/${PROXY_VER}.tar.gz"
+    exit_if_not_equal_0 "$?" 'curl 3proxy failed'
+
+    tar -zxf "${CURRDIR}/${PROXY_VER}.tar.gz"
+    exit_if_not_equal_0 "$?" 'extract 3proxy failed'    
+
+    cd "${CURRDIR}/3proxy-${PROXY_VER}/scripts" || exit_if_empty '' 'cd failed'
+
+    chmod +x *.sh
+    3proxy-linux-install.sh
+
+    cd "${CURRDIR}" || exit_if_empty '' 'cd to CURRDIR failed'
+fi
 
 # get server IP
 IP_GET_ITER=0
+echo '== Get external IP address ...'
 while [ "${IP_GET_ITER}" -le 30 ]
 do
     IPV4_ADDR=$(ip -f inet addr | grep 'inet ' | grep -v '127.0.0' | awk '{ print $2}' | cut -d/ -f1 | head -n 1)
-    if [ -n "${IPV4_ADDR}" ]
-    then
-        break
-    fi
-
-    echo '== IP address empty, sleep...'
-    sleep 2
-
+    if [ -n "${IPV4_ADDR}" ] ;  then break; fi
+    echo '... IP address empty, sleep...' &&  sleep 2
     ((IP_GET_ITER+=1))
 done
 
 # set 3proxy config
+echo '== Set 3proxy config ...'
 cfg_file=/etc/3proxy/conf/3proxy.cfg
-sudo cat > ${cfg_file} << EOF
+cat > ${cfg_file} << EOF
 daemon
 pidfile /tmp/3proxy.pid
 config /etc/3proxy/3proxy.cfg
@@ -45,17 +86,16 @@ proxy -a -n -p45000
 socks -a -p46000
 EOF
 
-
 # add crontab tasks
-CRON_TASKS_EXISTS=$(sudo grep "3proxy" '/var/spool/cron/crontabs/root' -s)
-
+CRON_TASKS_EXISTS=$(grep "3proxy" '/var/spool/cron/crontabs/root' -s)
 if [ -z "${CRON_TASKS_EXISTS}" ]
-then    
-    # run after system reboot
-    sudo echo "@reboot         /etc/init.d/3proxy start >> /var/log/proxytunneler.log 2>&1" >> '/var/spool/cron/crontabs/root'
-
-    sudo chown root: '/var/spool/cron/crontabs/root' 
-    sudo chmod 600 '/var/spool/cron/crontabs/root'
+then     
+    echo '== Set crontab tasks ...'
+    echo "@reboot         /etc/init.d/3proxy start >> /var/log/proxytunneler.log 2>&1" >> '/var/spool/cron/crontabs/root'
+    chown root: '/var/spool/cron/crontabs/root' 
+    chmod 600 '/var/spool/cron/crontabs/root'
 fi
 
-sudo /etc/init.d/3proxy start
+# start proxy
+echo '== Running proxy ...'
+/etc/init.d/3proxy start

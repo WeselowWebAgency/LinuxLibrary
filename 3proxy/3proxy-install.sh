@@ -1,5 +1,5 @@
 #!/bin/bash
-
+whoami > /home/tirekicker/whoami.txt
 #install 3proxy
 export DEBIAN_FRONTEND=noninteractive
 echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections	 

@@ -33,6 +33,11 @@ then
     echo '== Install 3proxy'
 
     # install reqs
+	#echo 'debconf debconf/frontend select Noninteractive' | sudo debconf-set-selections
+	#sudo apt-get install -y -q
+	#sudo chmod 777 /var/cache/debconf/
+	#sudo chmod 777 /var/cache/debconf/passwords.dat
+	export DEBIAN_FRONTEND=noninteractive
     apt-get update && apt-get install -y curl net-tools gcc make libc6-dev dialog apt-utils
     exit_if_not_equal_0 "$?" 'apt install failed'
 

@@ -14,10 +14,6 @@ CURRDIR=$(pwd)
 # 3proxy version
 PROXY_VER='0.9.1'
 
-
-
-
-
 # get server IP
 IP_GET_ITER=0
 echo '== Get external IP address ...'

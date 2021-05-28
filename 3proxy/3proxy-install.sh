@@ -1,14 +1,16 @@
 #!/bin/bash
 
 #install 3proxy
-#wget https://github.com/3proxy/3proxy/releases/download/0.9.3/3proxy-0.9.3.x86_64.deb
-#dpkg -i 3proxy-0.9.3.x86_64.deb
-#apt-get -f install
+export DEBIAN_FRONTEND=noninteractive
+wget https://github.com/3proxy/3proxy/releases/download/0.9.3/3proxy-0.9.3.x86_64.deb
+dpkg -i 3proxy-0.9.3.x86_64.deb
+apt-get -f install && apt-get install -y -q curl net-tools gcc make libc6-dev dialog apt-utils
+
 
 # current directory
 CURRDIR=$(pwd)
 # 3proxy version
-PROXY_VER='0.9.3'
+PROXY_VER='0.9.1'
 
 
 # funcs
@@ -28,16 +30,17 @@ exit_if_empty() {
 }
 
 # install 3proxy
+/*
 if [ ! -f /usr/bin/3proxy ]
 then
     echo '== Install 3proxy'
 
     # for non-interactive scripts
 	# variant 1:
-	#echo 'debconf debconf/frontend select Noninteractive' | sudo debconf-set-selections
-	#sudo apt-get install -y -q
-	#sudo chmod 777 /var/cache/debconf/
-	#sudo chmod 777 /var/cache/debconf/passwords.dat
+	echo 'debconf debconf/frontend select Noninteractive' | sudo debconf-set-selections
+	sudo apt-get install -y -q
+	sudo chmod 777 /var/cache/debconf/
+	sudo chmod 777 /var/cache/debconf/passwords.dat
 	
 	# variant 2:
 	export DEBIAN_FRONTEND=noninteractive
@@ -59,6 +62,7 @@ then
 
     cd "${CURRDIR}" || exit_if_empty '' 'cd to CURRDIR failed'
 fi
+*/
 
 # get server IP
 IP_GET_ITER=0

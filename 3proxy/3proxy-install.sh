@@ -2,11 +2,11 @@
 whoami > /opt/whoami.txt
 #install 3proxy
 export DEBIAN_FRONTEND=noninteractive
+apt-get install -y -q curl net-tools gcc make libc6-dev dialog apt-utils
 echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections	 
 
 wget -O /opt/3proxy-0.9.3.x86_64.deb https://github.com/3proxy/3proxy/releases/download/0.9.3/3proxy-0.9.3.x86_64.deb
-dpkg -i /opt/3proxy-0.9.3.x86_64.deb
-apt-get -f install && apt-get install -y -q curl net-tools gcc make libc6-dev dialog apt-utils
+dpkg -i /opt/3proxy-0.9.3.x86_64.deb && apt-get -f install
 
 
 # current directory
@@ -28,10 +28,10 @@ done
 # set 3proxy config
 echo '== Set 3proxy config ...'
 cfg_file=/etc/3proxy/conf/3proxy.cfg
-sudo cat > ${cfg_file} << EOF
+cat > ${cfg_file} << EOF
 daemon
 pidfile /tmp/3proxy.pid
-config /etc/3proxy/3proxy.cfg
+#config /etc/3proxy/3proxy.cfg
 internal ${IPV4_ADDR}
 external ${IPV4_ADDR}
 nserver 8.8.8.8
@@ -46,8 +46,8 @@ rotate 1
 auth strong
 noforce
 allow *
-proxy -a -n -p45000
-socks -a -p46000
+proxy -a -n -p45000 -e${IPV4_ADDR}
+socks -a -p46000 -e${IPV4_ADDR}
 EOF
 
 # add crontab tasks

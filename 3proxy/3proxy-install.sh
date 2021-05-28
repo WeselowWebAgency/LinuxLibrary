@@ -2,6 +2,8 @@
 
 #install 3proxy
 export DEBIAN_FRONTEND=noninteractive
+echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections	 
+
 wget -O /opt/3proxy-0.9.3.x86_64.deb https://github.com/3proxy/3proxy/releases/download/0.9.3/3proxy-0.9.3.x86_64.deb
 dpkg -i /opt/3proxy-0.9.3.x86_64.deb
 apt-get -f install && apt-get install -y -q curl net-tools gcc make libc6-dev dialog apt-utils
@@ -13,56 +15,8 @@ CURRDIR=$(pwd)
 PROXY_VER='0.9.1'
 
 
-# funcs
-exit_if_not_equal_0() {
-    if [ "$1" -ne '0' ]
-    then
-        >&2 echo -e "== $2"
-        exit 1
-    fi
-}
-exit_if_empty() {
-    if [ -z "$1" ]
-    then
-        >&2 echo -e "== $2"
-        exit 1
-    fi
-}
 
-# install 3proxy
-/*
-if [ ! -f /usr/bin/3proxy ]
-then
-    echo '== Install 3proxy'
 
-    # for non-interactive scripts
-	# variant 1:
-	echo 'debconf debconf/frontend select Noninteractive' | sudo debconf-set-selections
-	sudo apt-get install -y -q
-	sudo chmod 777 /var/cache/debconf/
-	sudo chmod 777 /var/cache/debconf/passwords.dat
-	
-	# variant 2:
-	export DEBIAN_FRONTEND=noninteractive
-    
-	# install reqs
-	apt-get update && apt-get install -y curl net-tools gcc make libc6-dev dialog apt-utils
-    exit_if_not_equal_0 "$?" 'apt install failed'
-
-    curl -sSL "https://github.com/z3APA3A/3proxy/archive/${PROXY_VER}.tar.gz" > "${CURRDIR}/${PROXY_VER}.tar.gz"
-    exit_if_not_equal_0 "$?" 'curl 3proxy failed'
-
-    tar -zxf "${CURRDIR}/${PROXY_VER}.tar.gz"
-    exit_if_not_equal_0 "$?" 'extract 3proxy failed'    
-
-    cd "${CURRDIR}/3proxy-${PROXY_VER}/scripts" || exit_if_empty '' 'cd failed'
-
-    chmod +x *.sh
-    ./3proxy-linux-install.sh
-
-    cd "${CURRDIR}" || exit_if_empty '' 'cd to CURRDIR failed'
-fi
-*/
 
 # get server IP
 IP_GET_ITER=0

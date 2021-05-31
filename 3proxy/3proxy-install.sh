@@ -1,17 +1,18 @@
 #!/bin/bash
-whoami > /opt/whoami.txt
-#install 3proxy
 export DEBIAN_FRONTEND=noninteractive
 
+# settings
 LOGFILE=/opt/3proxy-install.log
+
 # print current datetime to log (for debug)
+whoami > /opt/whoami.txt
 date >> ${LOGFILE}
 
 # install 3proxy
 if [ ! -f /usr/bin/3proxy ]
 then
     echo '== Install 3proxy'
-	apt-get install -y -q curl net-tools gcc make libc6-dev dialog apt-utils
+	apt update && apt-get install -y -q curl net-tools gcc make libc6-dev dialog apt-utils
 	echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
 	wget -O /opt/3proxy-0.9.3.x86_64.deb https://github.com/3proxy/3proxy/releases/download/0.9.3/3proxy-0.9.3.x86_64.deb
 	dpkg -i /opt/3proxy-0.9.3.x86_64.deb && apt-get -f install

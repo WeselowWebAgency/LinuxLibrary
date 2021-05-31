@@ -2,11 +2,20 @@
 whoami > /opt/whoami.txt
 #install 3proxy
 export DEBIAN_FRONTEND=noninteractive
-apt-get install -y -q curl net-tools gcc make libc6-dev dialog apt-utils
-echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections	 
 
-wget -O /opt/3proxy-0.9.3.x86_64.deb https://github.com/3proxy/3proxy/releases/download/0.9.3/3proxy-0.9.3.x86_64.deb
-dpkg -i /opt/3proxy-0.9.3.x86_64.deb && apt-get -f install
+LOGFILE=/opt/3proxy-install.log
+# print current datetime to log (for debug)
+date >> ${LOGFILE}
+
+# install 3proxy
+if [ ! -f /usr/bin/3proxy ]
+then
+    echo '== Install 3proxy'
+	apt-get install -y -q curl net-tools gcc make libc6-dev dialog apt-utils
+	echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
+	wget -O /opt/3proxy-0.9.3.x86_64.deb https://github.com/3proxy/3proxy/releases/download/0.9.3/3proxy-0.9.3.x86_64.deb
+	dpkg -i /opt/3proxy-0.9.3.x86_64.deb && apt-get -f install
+fi
 
 # get server IP
 IP_GET_ITER=0
@@ -37,12 +46,13 @@ external ${IPV4_ADDR}
 
 users \$/conf/passwd
 
-log /logs/3proxy.log D
+log /logs/3proxy.log H
 logformat "-,\''+_L%t,""%N"",%p,%E,""%U"",""%C"",%c,""%R"",%r,%O,%I,""%n"",""%T"" "
 rotate 1
 
 include /conf/counters
 include /conf/bandlimiters
+
 auth strong
 noforce
 allow *
@@ -55,11 +65,12 @@ CRON_TASKS_EXISTS=$(grep "3proxy" '/var/spool/cron/crontabs/root' -s)
 if [ -z "${CRON_TASKS_EXISTS}" ]
 then     
     echo '== Set crontab tasks ...'
-    echo "@reboot         /etc/init.d/3proxy start >> /var/log/proxytunneler.log 2>&1" >> '/var/spool/cron/crontabs/root'
+	PATH=$(find / -name 3proxy-install.sh -type f)
+    echo "@reboot         ${PATH} >> ${LOGFILE} 2>&1" >> '/var/spool/cron/crontabs/root'
     chown root: '/var/spool/cron/crontabs/root' 
     chmod 600 '/var/spool/cron/crontabs/root'
 fi
 
 # start proxy
-#echo '== Running proxy ...'
-#/etc/init.d/3proxy start
+echo '== Running proxy ...'
+/etc/init.d/3proxy start

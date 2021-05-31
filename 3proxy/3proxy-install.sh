@@ -4,6 +4,10 @@ export DEBIAN_FRONTEND=noninteractive
 # settings
 LOGFILE=/opt/3proxy-install.log
 
+# set default proxy ports
+if [ -z "${1}" ]; then HTTP_PORT=45000; else HTTP_PORT=$1; fi
+if [ -z "${2}" ]; then SOCKS_PORT=46000; else SOCKS_PORT=$2; fi
+
 # print current datetime to log (for debug)
 whoami > /opt/whoami.txt
 date >> ${LOGFILE}
@@ -12,7 +16,7 @@ date >> ${LOGFILE}
 if [ ! -f /usr/bin/3proxy ]
 then
     echo '== Install 3proxy'
-	apt update && apt-get install -y -q curl net-tools gcc make libc6-dev dialog apt-utils
+	apt update -q && apt-get install -y -q curl net-tools gcc make libc6-dev dialog apt-utils
 	echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
 	wget -O /opt/3proxy-0.9.3.x86_64.deb https://github.com/3proxy/3proxy/releases/download/0.9.3/3proxy-0.9.3.x86_64.deb
 	dpkg -i /opt/3proxy-0.9.3.x86_64.deb && apt-get -f install
@@ -57,8 +61,8 @@ include /conf/bandlimiters
 auth strong
 noforce
 allow *
-proxy -a -n -p45000
-socks -a -p46000
+proxy -a -n -p${HTTP_PORT}
+socks -a -p${SOCKS_PORT}
 EOF
 
 # add crontab tasks

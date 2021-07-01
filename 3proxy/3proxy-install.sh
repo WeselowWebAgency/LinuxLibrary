@@ -70,10 +70,11 @@ CRON_TASKS_EXISTS=$(grep "3proxy" '/var/spool/cron/crontabs/root' -s)
 if [ -z "${CRON_TASKS_EXISTS}" ]
 then     
     echo '== Set crontab tasks ...'
-	PATH=$(find / -name 3proxy-install.sh -type f)
-    echo "@reboot         ${PATH} >> ${LOGFILE} 2>&1" >> '/var/spool/cron/crontabs/root'
-    chown root: '/var/spool/cron/crontabs/root' 
-    chmod 600 '/var/spool/cron/crontabs/root'
+#	PATH=$(find / -name 3proxy-install.sh -type f)
+#    echo "@reboot         ${PATH} >> ${LOGFILE} 2>&1" >> '/var/spool/cron/crontabs/root'
+#    chown root: '/var/spool/cron/crontabs/root' 
+#    chmod 600 '/var/spool/cron/crontabs/root'
+     echo "@reboot         /etc/init.d/3proxy start" >> '/var/spool/cron/crontabs/root'
 fi
 
 # start proxy
